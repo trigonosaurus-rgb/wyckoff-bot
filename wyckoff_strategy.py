@@ -1,6 +1,6 @@
 import pandas as pd
 
-def generate_signals(df, lookback=50):
+def generate_signals(df, lookback=50, reverse=False):
     """
     Applies pure Price Action Wyckoff logic (Spring / Upthrust).
     - lookback: Period to determine Trading Range (Support/Resistance)
@@ -28,22 +28,36 @@ def generate_signals(df, lookback=50):
         if pd.isna(tr_low) or pd.isna(tr_high):
             continue
             
-        # SPRING (Long Signal)
-        # Price swept support (went lower than TR_Low) but closed above TR_Low
+        # SPRING (Price swept support but closed above TR_Low)
         if current_low < tr_low and current_close > tr_low:
-            df.loc[df.index[i], 'signal'] = 1
-            df.loc[df.index[i], 'entry_price'] = current_close
-            df.loc[df.index[i], 'stop_loss'] = current_low * 0.999 # Stop-loss just below the Spring wick
-            df.loc[df.index[i], 'take_profit'] = tr_high # Target the top of the range
-            df.loc[df.index[i], 'pattern'] = "Spring"
+            if not reverse:
+                df.loc[df.index[i], 'signal'] = 1
+                df.loc[df.index[i], 'entry_price'] = current_close
+                df.loc[df.index[i], 'stop_loss'] = current_low * 0.999 
+                df.loc[df.index[i], 'take_profit'] = tr_high 
+                df.loc[df.index[i], 'pattern'] = "Spring"
+            else:
+                # Reversed: We expect the price to continue dropping
+                df.loc[df.index[i], 'signal'] = -1
+                df.loc[df.index[i], 'entry_price'] = current_close
+                df.loc[df.index[i], 'stop_loss'] = tr_high # Stop loss at the top of range
+                df.loc[df.index[i], 'take_profit'] = current_low * 0.999 # Target the sweep low
+                df.loc[df.index[i], 'pattern'] = "Rev_Spring"
             
-        # UPTHRUST (Short Signal)
-        # Price swept resistance (went higher than TR_High) but closed below TR_High
+        # UPTHRUST (Price swept resistance but closed below TR_High)
         elif current_high > tr_high and current_close < tr_high:
-            df.loc[df.index[i], 'signal'] = -1
-            df.loc[df.index[i], 'entry_price'] = current_close
-            df.loc[df.index[i], 'stop_loss'] = current_high * 1.001 # Stop-loss just above the Upthrust wick
-            df.loc[df.index[i], 'take_profit'] = tr_low # Target the bottom of the range
-            df.loc[df.index[i], 'pattern'] = "Upthrust"
+            if not reverse:
+                df.loc[df.index[i], 'signal'] = -1
+                df.loc[df.index[i], 'entry_price'] = current_close
+                df.loc[df.index[i], 'stop_loss'] = current_high * 1.001 
+                df.loc[df.index[i], 'take_profit'] = tr_low 
+                df.loc[df.index[i], 'pattern'] = "Upthrust"
+            else:
+                # Reversed: We expect the price to continue pumping
+                df.loc[df.index[i], 'signal'] = 1
+                df.loc[df.index[i], 'entry_price'] = current_close
+                df.loc[df.index[i], 'stop_loss'] = tr_low # Stop loss at bottom of range
+                df.loc[df.index[i], 'take_profit'] = current_high * 1.001 # Target the sweep high
+                df.loc[df.index[i], 'pattern'] = "Rev_Upthrust"
             
     return df

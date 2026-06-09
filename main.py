@@ -15,7 +15,8 @@ def main():
     
     print("\n2. Applying Wyckoff Strategy (Finding Springs & Upthrusts)...")
     # lookback of 50 candles to determine the Trading Range Support & Resistance
-    df_signals = generate_signals(df, lookback=50)
+    # Set reverse=True to test the inverted logic
+    df_signals = generate_signals(df, lookback=50, reverse=True)
     
     print("3. Running simulation...")
     initial_balance = 1000.0
