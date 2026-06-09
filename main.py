@@ -1,26 +1,28 @@
 import pandas as pd
 from data_fetcher import fetch_data
 from wyckoff_strategy import generate_signals
-from backtester import run_backtest, print_report
+from backtester import run_portfolio_backtest, print_report
 
 def main():
-    symbol = 'BTC/USDT'
+    symbols = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT']
     timeframe = '1h'
     limit = 40000   # Number of candles to fetch (40000 hours = ~4.5 years)
     
-    print(f"--- Wyckoff Price Action Backtester ---")
+    print(f"--- Portfolio Wyckoff Price Action Backtester ---")
     
-    print("\n1. Fetching historical data...")
-    df = fetch_data(symbol=symbol, timeframe=timeframe, limit=limit)
+    dfs_signals = {}
     
-    print("\n2. Applying Wyckoff Strategy (Finding Springs & Upthrusts)...")
-    # lookback of 50 candles to determine the Trading Range Support & Resistance
-    # Set reverse=True to test the inverted logic
-    df_signals = generate_signals(df, lookback=50, reverse=True)
+    for symbol in symbols:
+        print(f"\n1. Fetching historical data for {symbol}...")
+        df = fetch_data(symbol=symbol, timeframe=timeframe, limit=limit)
+        
+        print(f"2. Applying Wyckoff Strategy (Inverted) for {symbol}...")
+        df_signals = generate_signals(df, lookback=50, reverse=True)
+        dfs_signals[symbol] = df_signals
     
-    print("3. Running simulation...")
+    print("\n3. Running Portfolio simulation...")
     initial_balance = 1000.0
-    trades, final_balance = run_backtest(df_signals, initial_balance=initial_balance, compounding=True, leverage=1.8, min_rr=0.1)
+    trades, final_balance = run_portfolio_backtest(dfs_signals, initial_balance=initial_balance, leverage=1.8, min_rr=0.1)
     
     print("\n4. Generating Report...")
     print_report(trades, initial_balance, final_balance)
