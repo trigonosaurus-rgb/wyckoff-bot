@@ -89,10 +89,13 @@ def run_backtest(df, initial_balance=1000, leverage=2, min_rr=0.1):
     return trades, balance
 
 def print_report(trades, initial_balance, final_balance):
+    max_bal = max([initial_balance] + [t['balance'] for t in trades]) if trades else initial_balance
+    
     print(f"\n{'='*40}")
     print(f"        WYCKOFF BACKTEST REPORT")
     print(f"{'='*40}")
     print(f"Initial Balance: ${initial_balance}")
+    print(f"Peak Balance:    ${max_bal:.2f}")
     print(f"Final Balance:   ${final_balance:.2f}")
     
     net_profit = final_balance - initial_balance
