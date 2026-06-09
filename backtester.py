@@ -124,11 +124,3 @@ def print_report(trades, initial_balance, final_balance):
     print(f"Total Shorts:    {len(shorts)}")
     print(f"Short Wins:      {len(short_wins)}")
     print(f"Short Win Rate:  {short_win_rate:.2f}%\n")
-    
-    # Print Trades Table
-    headers = ["Entry Time", "Exit Time", "Type", "Pattern", "Entry $", "Exit $", "Close", "PnL $", "Balance $"]
-    rows = [[t['entry_time'], t['exit_time'], t['type'], t['pattern'], 
-             round(t['entry_price'], 2), round(t['exit_price'], 2), 
-             t['reason'], t['pnl'], t['balance']] for t in trades]
-             
-    print(tabulate(rows, headers=headers, tablefmt="grid"))
