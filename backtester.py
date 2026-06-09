@@ -95,10 +95,35 @@ def print_report(trades, initial_balance, final_balance):
     losses = [t for t in trades if t['pnl'] <= 0]
     win_rate = len(wins) / len(trades) * 100
     
+    longs = [t for t in trades if t['type'] == 'LONG']
+    long_wins = [t for t in longs if t['pnl'] > 0]
+    long_win_rate = (len(long_wins) / len(longs) * 100) if len(longs) > 0 else 0
+    
+    shorts = [t for t in trades if t['type'] == 'SHORT']
+    short_wins = [t for t in shorts if t['pnl'] > 0]
+    short_win_rate = (len(short_wins) / len(shorts) * 100) if len(shorts) > 0 else 0
+    
+    avg_win = sum([t['pnl'] for t in wins]) / len(wins) if len(wins) > 0 else 0
+    avg_loss = sum([abs(t['pnl']) for t in losses]) / len(losses) if len(losses) > 0 else 0
+    rr_ratio = (avg_win / avg_loss) if avg_loss > 0 else 0
+
     print(f"Total Trades:    {len(trades)}")
     print(f"Wins:            {len(wins)}")
     print(f"Losses:          {len(losses)}")
-    print(f"Win Rate:        {win_rate:.2f}%\n")
+    print(f"Win Rate:        {win_rate:.2f}%")
+    print(f"Avg Win:         ${avg_win:.2f}")
+    print(f"Avg Loss:        ${avg_loss:.2f}")
+    print(f"Risk/Reward (RR): {rr_ratio:.2f}\n")
+    
+    print(f"--- LONG STATS ---")
+    print(f"Total Longs:     {len(longs)}")
+    print(f"Long Wins:       {len(long_wins)}")
+    print(f"Long Win Rate:   {long_win_rate:.2f}%\n")
+    
+    print(f"--- SHORT STATS ---")
+    print(f"Total Shorts:    {len(shorts)}")
+    print(f"Short Wins:      {len(short_wins)}")
+    print(f"Short Win Rate:  {short_win_rate:.2f}%\n")
     
     # Print Trades Table
     headers = ["Entry Time", "Exit Time", "Type", "Pattern", "Entry $", "Exit $", "Close", "PnL $", "Balance $"]

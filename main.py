@@ -6,7 +6,7 @@ from backtester import run_backtest, print_report
 def main():
     symbol = 'BTC/USDT'
     timeframe = '1h'
-    limit = 5000  # Number of candles to fetch (5000 hours = ~208 days)
+    limit = 40000  # Number of candles to fetch (40000 hours = ~4.5 years)
     
     print(f"--- Wyckoff Price Action Backtester ---")
     
