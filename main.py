@@ -20,7 +20,7 @@ def main():
     
     print("3. Running simulation...")
     initial_balance = 1000.0
-    trades, final_balance = run_backtest(df_signals, initial_balance=initial_balance, compounding=True, leverage=2.5, min_rr=0.12)
+    trades, final_balance = run_backtest(df_signals, initial_balance=initial_balance, compounding=True, leverage=1.8, min_rr=0.1)
     
     print("\n4. Generating Report...")
     print_report(trades, initial_balance, final_balance)
