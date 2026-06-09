@@ -107,13 +107,45 @@ def print_report(trades, initial_balance, final_balance):
     avg_loss = sum([abs(t['pnl']) for t in losses]) / len(losses) if len(losses) > 0 else 0
     rr_ratio = (avg_win / avg_loss) if avg_loss > 0 else 0
 
+    max_balance = initial_balance
+    max_dd_percent = 0.0
+    max_dd_usd = 0.0
+    current_streak = 0
+    max_losing_streak = 0
+    worst_trade_usd = 0.0
+    
+    for t in trades:
+        # Max Drawdown
+        if t['balance'] > max_balance:
+            max_balance = t['balance']
+        dd_usd = max_balance - t['balance']
+        dd_percent = (dd_usd / max_balance) * 100 if max_balance > 0 else 0
+        if dd_percent > max_dd_percent:
+            max_dd_percent = dd_percent
+            max_dd_usd = dd_usd
+            
+        # Losing Streak
+        if t['pnl'] <= 0:
+            current_streak += 1
+            if current_streak > max_losing_streak:
+                max_losing_streak = current_streak
+        else:
+            current_streak = 0
+            
+        # Worst Trade
+        if t['pnl'] < worst_trade_usd:
+            worst_trade_usd = t['pnl']
+
     print(f"Total Trades:    {len(trades)}")
     print(f"Wins:            {len(wins)}")
     print(f"Losses:          {len(losses)}")
     print(f"Win Rate:        {win_rate:.2f}%")
     print(f"Avg Win:         ${avg_win:.2f}")
     print(f"Avg Loss:        ${avg_loss:.2f}")
-    print(f"Risk/Reward (RR): {rr_ratio:.2f}\n")
+    print(f"Risk/Reward (RR): {rr_ratio:.2f}")
+    print(f"Max Drawdown:    ${max_dd_usd:.2f} ({max_dd_percent:.2f}%)")
+    print(f"Longest Loss Strk: {max_losing_streak}")
+    print(f"Worst Trade:     ${worst_trade_usd:.2f}\n")
     
     print(f"--- LONG STATS ---")
     print(f"Total Longs:     {len(longs)}")
