@@ -172,13 +172,35 @@ def print_report(trades, initial_balance, final_balance):
     print(f"Short Wins:      {len(short_wins)}")
     print(f"Short Win Rate:  {short_win_rate:.2f}%\n")
 
-    print(f"--- MONTHLY PNL ---")
-    monthly_pnl = {}
+    print(f"--- YEARLY PNL ---")
+    yearly_pnl = {}
+    current_year = None
+    
     for t in trades:
-        month_str = t['exit_time'].strftime('%Y-%m')
-        if month_str not in monthly_pnl:
-            monthly_pnl[month_str] = 0.0
-        monthly_pnl[month_str] += t['pnl']
+        year_str = t['exit_time'].strftime('%Y')
+        if current_year != year_str:
+            if current_year is not None:
+                yearly_pnl[current_year]['end_bal'] = t['balance'] - t['pnl']
+                
+            current_year = year_str
+            yearly_pnl[current_year] = {
+                'start_bal': t['balance'] - t['pnl'],
+                'pnl_usd': 0.0,
+                'end_bal': t['balance']
+            }
+            
+        yearly_pnl[current_year]['pnl_usd'] += t['pnl']
+        yearly_pnl[current_year]['end_bal'] = t['balance']
         
-    for m in sorted(monthly_pnl.keys()):
-        print(f"{m}: ${monthly_pnl[m]:.2f}")
+    for y in sorted(yearly_pnl.keys()):
+        start_b = yearly_pnl[y]['start_bal']
+        pnl_usd = yearly_pnl[y]['pnl_usd']
+        pct_growth = (pnl_usd / start_b * 100) if start_b > 0 else 0
+        print(f"{y}: ${pnl_usd:,.2f} ({pct_growth:+.2f}%)")
+
+    unique_months = set([t['exit_time'].strftime('%Y-%m') for t in trades])
+    num_months = len(unique_months) if len(unique_months) > 0 else 1
+    total_pct = (final_balance - initial_balance) / initial_balance * 100
+    avg_monthly_pct = total_pct / num_months
+    
+    print(f"\nAvg Monthly Profit: {avg_monthly_pct:+.2f}% (over {num_months} active months)")
