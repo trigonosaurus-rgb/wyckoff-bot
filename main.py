@@ -6,7 +6,7 @@ from backtester import run_backtest, print_report
 def main():
     symbol = 'BTC/USDT'
     timeframe = '1h'
-    limit = 40000  # Number of candles to fetch (40000 hours = ~4.5 years)
+    limit = 40000   # Number of candles to fetch (40000 hours = ~4.5 years)
     
     print(f"--- Wyckoff Price Action Backtester ---")
     
@@ -20,7 +20,7 @@ def main():
     
     print("3. Running simulation...")
     initial_balance = 1000.0
-    trades, final_balance = run_backtest(df_signals, initial_balance=initial_balance)
+    trades, final_balance = run_backtest(df_signals, initial_balance=initial_balance, compounding=False)
     
     print("\n4. Generating Report...")
     print_report(trades, initial_balance, final_balance)
