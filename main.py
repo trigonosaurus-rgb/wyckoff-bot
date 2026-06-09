@@ -4,7 +4,7 @@ from wyckoff_strategy import generate_signals
 from backtester import run_portfolio_backtest, print_report
 
 def main():
-    symbols = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT']
+    symbols = ['BTC/USDT', 'SOL/USDT']
     timeframe = '1h'
     limit = 40000   # Number of candles to fetch (40000 hours = ~4.5 years)
     
